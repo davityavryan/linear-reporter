@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 
+import { subMonths, startOfMonth, format } from "date-fns";
 import { LinearClient, IssueConnection } from "@linear/sdk";
-import { subMonths} from "date-fns"
+
 import "../globals.css";
 
 import { Spinner } from "../components/Spinner";
+import { CopyToClipboard } from "../components/CopyToClipboard";
+import { CopyIcon } from "../icons/Copy";
 
 export default function Page() {
     const [apiKey, setApiKey] = useState<string>(global?.localStorage?.getItem("apiKey") ?? "");
@@ -30,12 +33,11 @@ export default function Page() {
             void (async () => {
                 const me = await linearClient.viewer;
                 const myIssues = await me.assignedIssues({
-                    first: 250,
                     filter: {
                         completedAt: {
-                            gte: subMonths(new Date(), 2),
+                            gte: startOfMonth(subMonths(new Date(), 2)),
                         },
-                    }
+                    },
                 });
 
                 setTickets(
@@ -72,19 +74,22 @@ export default function Page() {
 
             {Object.entries(tickets).map(([month, nodes]) => (
                 <div key={month} className="relative z-10 bg-stone-800">
-                    <div className="sticky top-0 bg-stone-800 select-none text-center font-bold py-3">{month}</div>
+                    <div className="sticky top-0 bg-stone-800 select-none text-center font-bold py-3 flex justify-center">
+                        <div className="flex items-center gap-3">
+                            {month}
+                            <CopyToClipboard text={nodes.map(({ title }) => `- ${title}`).join("\n")}>
+                                <button>
+                                    <CopyIcon />
+                                </button>
+                            </CopyToClipboard>
+                        </div>
+                    </div>
 
                     {nodes.map(({ completedAt, identifier, title }) => (
                         <div key={`${completedAt.toString()}-identifier`} className="md:flex gap-5 md:gap-3">
                             <div className="select-none">{identifier}</div>
                             <div className="flex-1 min-w-0 py-1 md:py-0 -indent-5 ml-5">- {title}</div>
-                            <div className="select-none text-right">
-                                {completedAt.toLocaleDateString("de-DE", {
-                                    year: "2-digit",
-                                    month: "short",
-                                    day: "numeric",
-                                })}
-                            </div>
+                            <div className="select-none text-right">{format(completedAt, "dd MMM yyyy")}</div>
                         </div>
                     ))}
                 </div>
