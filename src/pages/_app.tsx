@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { LinearClient, IssueConnection } from "@linear/sdk";
-
+import { subMonths} from "date-fns"
 import "../globals.css";
 
 import { Spinner } from "../components/Spinner";
@@ -29,11 +29,19 @@ export default function Page() {
 
             void (async () => {
                 const me = await linearClient.viewer;
-                const myIssues = await me.assignedIssues();
+                const myIssues = await me.assignedIssues({
+                    first: 250,
+                    filter: {
+                        completedAt: {
+                            gte: subMonths(new Date(), 2),
+                        },
+                    }
+                });
 
                 setTickets(
                     myIssues.nodes
                         .filter(({ completedAt }) => !!completedAt)
+                        .sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime())
                         .reduce((accumulator, node) => {
                             const month = node.completedAt.toLocaleString("default", { month: "long" });
 
