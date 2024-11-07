@@ -10,15 +10,15 @@
         "autoprefixer": "^10.4.15",
         "copy-to-clipboard": "^3.3.3",
         "date-fns": "^4.1.0",
-        "next": "^13.4.12",
+        "next": "^15.0.2",
         "postcss": "^8.4.29",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "tailwindcss": "^3.3.3"
     },
     "devDependencies": {
-        "@linear/sdk": "^8.0.0",
-        "@types/node": "^18.17.15",
+        "@linear/sdk": "^32.0.0",
+        "@types/node": "^20.17.6",
         "@types/react": "^18.2.21",
         "@types/react-dom": "^18.2.7",
         "encoding": "^0.1.13",
